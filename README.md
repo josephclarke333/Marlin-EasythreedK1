@@ -5,85 +5,61 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date/marlinfirmware/marlin.svg)
 [![Build Status](https://github.com/MarlinFirmware/Marlin/workflows/CI/badge.svg?branch=bugfix-2.0.x)](https://github.com/MarlinFirmware/Marlin/actions)
 
-<img align="right" width=175 src="buildroot/share/pixmaps/logo/marlin-250.png" />
+## Introduction
+Fork of marlin configured and compiled for the easythreed X1. My aim is to provide the most up to date version of marlin configured to work best for the X1 (and more easythreed printers if I find someone able to test the firmware me).
 
-Additional documentation can be found at the [Marlin Home Page](https://marlinfw.org/).
-Please test this firmware and let us know if it misbehaves in any way. Volunteers are standing by!
+## Features
+- Backlash Compensation - By default X 0.4mm, Y 0.5mm, Z 0mm
+- Bed Skew Compensation - Needs to be manually calibrated using M852 as it will vary significantly for each printer
+- Handling Of Physical Buttons - I did my best to re-write the libraries that handle the UI on the easythreed K7 to work for the X1 (given the K7 only had one button, one led and a switch I needed to re-write  most of it). Following is a simple overview of how I've tried to implement the buttons
+  - Each button flashes in succession apon powering on the printer (or resetting/connecting to USB) to indicate the printer is ready
+  - The home button flashes after being pressed while homing all axis' before turning back off again and disabling steppers, much like the stock firmware
+  - The retract button does pretty much the same thing as the stock firmware as well flashing fast indicate heating and slower as it begins to retract filament. It also extruder 10mm first to try to avoid a "bulge" in the end of the  filament which gets stuck in the extruder gears
+  - The feed button does pretty much  the same as stock
+  - Print button currently operates very much like the stock firmware with one press printing the first file on the SD card and a single press while printing causes a pause/resume. It also flashes fast if there is some sort of error mounting the sd or reading the time.
+  - There are defines at the start of easythreed_ui.cpp to set the button debounce, unpress, animation speed, ect.
+  
+## To do
+- Add the ability to select from the first 4 files on the SD using the 4 LEDs in each button to signify which button file is being selected.
+- Create an entry in boards.h and a pins_easythreedX1.h file to define pins used for LEDs and Buttons instead of using pins_SANGUINOLOLU_11.h
+- Better calibrate default backlash compensation
+- Add a version for the old X264 motor version (or you could simply change the default max feedrates and compile the firmware yourself)
+- Update the config for other prints like the X2, X3, X4, K1, K2, K3, K4, K7, ect. If you want firmware configured for one of these printers let me know as it shouldn't be too hard to change it over to work with any of those printers.
+- Add some sort of tutorial on compiling and/or installing the firmware
 
-## Marlin 2.0
+## Compiling/Installing
+This will just be quick and simple for now but I'll update it later to make it easier to follow
 
-Marlin 2.0 takes this popular RepRap firmware to the next level by adding support for much faster 32-bit and ARM-based boards while improving support for 8-bit AVR boards. Read about Marlin's decision to use a "Hardware Abstraction Layer" below.
+Installing:
+- Click Code>Download Zip>Save to Wherever You Want
+- Unzip folder
+- Open the folder where you saved it and open  Marlin>.pio>build>sanguino1284p_optimized and copy firmware.hex from that folder to somehwere you will remember
+- Connect your printer to your computer via USB
+- Open cura or prusa slicer
+  - In cura - Click Settings>Your_Printer_name>Manage Printers Then in the window that popped up select your printer and click Update Firmware>Upload Custom Firmware and slect the hex file
+  - In prusa slicer - Click  Configuration>Flash Printer Firmware Select the firmware.hex file you copied before and the serial port your printer is connected to and  click  Flash!
+  - If flashing fails (which it often seems to on the X1 you will need to compile from source and upload with platformio and autobuildmarlin
 
-Download earlier versions of Marlin on the [Releases page](https://github.com/MarlinFirmware/Marlin/releases).
+Compiling:
+- Click Code>Download Zip>Save to Wherever You Want
+- Unzip folder
+- Connect your printer to your computer via USB
+- Setup visual studio code with platformIO and Auto Build Marlin extensions
+- Click the Auto Build Marlin Menu from the bar on the left
+- Click Open Marlin 2.X folder and select the Marlin folder that you extracted from the zip
+- Click Show ABM Panel on the left bar
+- Click the Auto Build Marlin Panel that juts came up
+- Select upload from next to the Environments>sanguino128p_optimized section and wait for it to compile and upload
 
-## Example Configurations
+Post Installation Steps:
+- Run the following to set up the EEPROM with new config:
+  - M502
+  - M500
+  - M501
+- (Optional)- Calibrate steps per mm for extruder
 
-Before building Marlin you'll need to configure it for your specific hardware. Your vendor should have already provided source code with configurations for the installed firmware, but if you ever decide to upgrade you'll need updated configuration files. Marlin users have contributed dozens of tested example configurations to get you started. Visit the [MarlinFirmware/Configurations](https://github.com/MarlinFirmware/Configurations) repository to find the right configuration for your hardware.
-
-## Building Marlin 2.0
-
-To build Marlin 2.0 you'll need [Arduino IDE 1.8.8 or newer](https://www.arduino.cc/en/main/software) or [PlatformIO](http://docs.platformio.org/en/latest/ide.html#platformio-ide). Detailed build and install instructions are posted at:
-
-  - [Installing Marlin (Arduino)](http://marlinfw.org/docs/basics/install_arduino.html)
-  - [Installing Marlin (VSCode)](http://marlinfw.org/docs/basics/install_platformio_vscode.html).
-
-### Supported Platforms
-
-  Platform|MCU|Example Boards
-  --------|---|-------
-  [Arduino AVR](https://www.arduino.cc/)|ATmega|RAMPS, Melzi, RAMBo
-  [Teensy++ 2.0](http://www.microchip.com/wwwproducts/en/AT90USB1286)|AT90USB1286|Printrboard
-  [Arduino Due](https://www.arduino.cc/en/Guide/ArduinoDue)|SAM3X8E|RAMPS-FD, RADDS, RAMPS4DUE
-  [ESP32](https://github.com/espressif/arduino-esp32)|ESP32|FYSETC E4, E4d@BOX, MRR
-  [LPC1768](http://www.nxp.com/products/microcontrollers-and-processors/arm-based-processors-and-mcus/lpc-cortex-m-mcus/lpc1700-cortex-m3/512kb-flash-64kb-sram-ethernet-usb-lqfp100-package:LPC1768FBD100)|ARM® Cortex-M3|MKS SBASE, Re-ARM, Selena Compact
-  [LPC1769](https://www.nxp.com/products/processors-and-microcontrollers/arm-microcontrollers/general-purpose-mcus/lpc1700-cortex-m3/512kb-flash-64kb-sram-ethernet-usb-lqfp100-package:LPC1769FBD100)|ARM® Cortex-M3|Smoothieboard, Azteeg X5 mini, TH3D EZBoard
-  [STM32F103](https://www.st.com/en/microcontrollers-microprocessors/stm32f103.html)|ARM® Cortex-M3|Malyan M200, GTM32 Pro, MKS Robin, BTT SKR Mini
-  [STM32F401](https://www.st.com/en/microcontrollers-microprocessors/stm32f401.html)|ARM® Cortex-M4|ARMED, Rumba32, SKR Pro, Lerdge, FYSETC S6
-  [STM32F7x6](https://www.st.com/en/microcontrollers-microprocessors/stm32f7x6.html)|ARM® Cortex-M7|The Borg, RemRam V1
-  [SAMD51P20A](https://www.adafruit.com/product/4064)|ARM® Cortex-M4|Adafruit Grand Central M4
-  [Teensy 3.5](https://www.pjrc.com/store/teensy35.html)|ARM® Cortex-M4|
-  [Teensy 3.6](https://www.pjrc.com/store/teensy36.html)|ARM® Cortex-M4|
-  [Teensy 4.0](https://www.pjrc.com/store/teensy40.html)|ARM® Cortex-M7|
-  [Teensy 4.1](https://www.pjrc.com/store/teensy41.html)|ARM® Cortex-M7|
-  Linux Native|x86/ARM/etc.|Raspberry Pi
-
-## Submitting Changes
-
-- Submit **Bug Fixes** as Pull Requests to the ([bugfix-2.0.x](https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0.x)) branch.
-- Follow the [Coding Standards](http://marlinfw.org/docs/development/coding_standards.html) to gain points with the maintainers.
-- Please submit your questions and concerns to the [Issue Queue](https://github.com/MarlinFirmware/Marlin/issues).
-
-## Marlin Support
-
-The Issue Queue is reserved for Bug Reports and Feature Requests. To get help with configuration and troubleshooting, please use the following resources:
-
-- [Marlin Documentation](http://marlinfw.org) - Official Marlin documentation
-- [Marlin Discord](https://discord.gg/n5NJ59y) - Discuss issues with Marlin users and developers
-- Facebook Group ["Marlin Firmware"](https://www.facebook.com/groups/1049718498464482/)
-- RepRap.org [Marlin Forum](http://forums.reprap.org/list.php?415)
-- Facebook Group ["Marlin Firmware for 3D Printers"](https://www.facebook.com/groups/3Dtechtalk/)
-- [Marlin Configuration](https://www.youtube.com/results?search_query=marlin+configuration) on YouTube
-
-## Contributors
-
-Marlin is constantly improving thanks to a huge number of contributors from all over the world bringing their specialties and talents. Huge thanks are due to [all the contributors](https://github.com/MarlinFirmware/Marlin/graphs/contributors) who regularly patch up bugs, help direct traffic, and basically keep Marlin from falling apart. Marlin's continued existence would not be possible without them.
-
-## Administration
-
-Regular users can open and close their own issues, but only the administrators can do project-related things like add labels, merge changes, set milestones, and kick trolls. The current Marlin admin team consists of:
-
- - Scott Lahteine [[@thinkyhead](https://github.com/thinkyhead)] - USA - Project Maintainer &nbsp; [![Donate](https://api.flattr.com/button/flattr-badge-large.png)](http://www.thinkyhead.com/donate-to-marlin)
- - Roxanne Neufeld [[@Roxy-3D](https://github.com/Roxy-3D)] - USA
- - Keith Bennett [[@thisiskeithb](https://github.com/thisiskeithb)] - USA
- - Victor Oliveira [[@rhapsodyv](https://github.com/rhapsodyv)] - Brazil
- - Chris Pepper [[@p3p](https://github.com/p3p)] - UK
- - Jason Smith [[@sjasonsmith](https://github.com/sjasonsmith)] - USA
- - Luu Lac [[@shitcreek](https://github.com/shitcreek)] - USA
- - Bob Kuhn [[@Bob-the-Kuhn](https://github.com/Bob-the-Kuhn)] - USA
- - Erik van der Zalm [[@ErikZalm](https://github.com/ErikZalm)] - Netherlands &nbsp; [![Flattr Erik](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=ErikZalm&url=https://github.com/MarlinFirmware/Marlin&title=Marlin&language=&tags=github&category=software)
-
-## License
-
-Marlin is published under the [GPL license](/LICENSE) because we believe in open development. The GPL comes with both rights and obligations. Whether you use Marlin firmware as the driver for your open or closed-source product, you must keep Marlin open, and you must provide your compatible Marlin source code to end users upon request. The most straightforward way to comply with the Marlin license is to make a fork of Marlin on Github, perform your modifications, and direct users to your modified fork.
-
-While we can't prevent the use of this code in products (3D printers, CNC, etc.) that are closed source or crippled by a patent, we would prefer that you choose another firmware or, better yet, make your own.
+## Disclaimer
+I am NOT a programmer not am I a 3D printer expert just an enthusiast who likes to work with code and 3D printers.
+**You are downloading, compiling, installing and using this firmware at your own risk and I take no responsibility to any damage caused to you, your printer or any other person/item as a result of this firmwarea**
+This firmware is currently only tested by me on my two easytrheed X1's so isn't necesarrily stable (do not I also print almost exclusively using octoprint so not  much testing on the physical buttons has been done)
+Any feedback is apreciated and HAVE FUN :)
