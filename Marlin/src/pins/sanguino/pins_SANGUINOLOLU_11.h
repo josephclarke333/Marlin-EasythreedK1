@@ -57,6 +57,18 @@
   #define BOARD_INFO_NAME "Sanguinololu <1.2"
 #endif
 
+// Easythreed LED Pins
+#define BTN_PRINT_LED 10 // Home LED (I think?)
+#define BTN_FEED_LED 11 // Feed
+#define BTN_RETRACT_LED 16 // Retract
+#define BTN_HOME_LED 17 // Home
+
+// Easythreed Button Pins
+#define BTN_PRINT 27  // Print
+#define BTN_FEED 28  // Feed
+#define BTN_RETRACT 29  // Retract
+#define BTN_HOME 30  // Home
+
 //
 // Limit Switches
 //

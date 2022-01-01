@@ -27,9 +27,15 @@ class EasythreedUI {
     static void run();
 
   private:
-    static void blinkLED();
-    static void loadButton();
+    static void blinkPRINT();
+    static void blinkHOME();
+    static void blinkFEED();
+    static void blinkRETRACT();
+    static void feedButton();
+    static void retractButton();
     static void printButton();
+    static void homeButton();
+    static void startupAnimation();
 };
 
 extern EasythreedUI easythreed_ui;
