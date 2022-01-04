@@ -143,7 +143,7 @@
 //#define BLUETOOTH
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "Easythreed X1 Marlin 2.0"
+#define CUSTOM_MACHINE_NAME "Easythreed K1 Marlin 2.0"
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -927,7 +927,7 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 467, 467, 1160, 1040 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 607, 605, 1167.5, 1040 }
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -947,7 +947,7 @@
  * Override with M201
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 300, 300, 200, 300 }
+#define DEFAULT_MAX_ACCELERATION      { 600, 600, 200, 300 }
 
 #define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
