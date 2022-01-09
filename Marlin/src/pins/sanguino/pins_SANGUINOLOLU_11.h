@@ -72,8 +72,8 @@
 //
 // Limit Switches
 //
-#define X_STOP_PIN                            19
-#define Y_STOP_PIN                            18
+#define X_STOP_PIN                            18
+#define Y_STOP_PIN                            19
 #define Z_STOP_PIN                            20
 
 //
